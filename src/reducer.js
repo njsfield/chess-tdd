@@ -1,4 +1,5 @@
 import Chess from './lib/chess.js';
+import is_valid_position from './lib/is_valid_position';
 import { SELECT } from './constants';
 
 // Make available for testing
@@ -10,28 +11,33 @@ export const default_state = {
 };
 
 // Main State
-export default (state = default_state, { type, selected }) => {
+export default (state = default_state, { type, position }) => {
+  // Do not allow invalid select spots
+  if (!is_valid_position(position)) return state;
+  const current = new Chess(state.fen);
   switch (type) {
     case SELECT:
       // 3. (When confirming move)
-      if (selected == state.desired_move) {
+      if (position === state.desired_move) {
+        // Make move
+        current.move(position);
         return {
           ...default_state,
-          fen: new Chess(state.fen).move(selected).fen()
+          fen: current.fen()
         };
         // 2. (When preparing desired move)
-      } else if (state.selected_piece_options.indexOf(selected) > -1) {
+      } else if (state.selected_options.indexOf(position) > -1) {
         return {
           ...state,
-          desired_move: selected
+          desired_move: position
         };
-        // 1. For selecting piece (and preparing options)
+        // 1. For selecting position (and preparing options)
       } else {
         return {
-          desired_move: null,
-          selected,
-          selected_options: new Chess(state.fen).moves({
-            square: selected
+          ...default_state,
+          selected: position,
+          selected_options: current.moves({
+            square: position
           })
         };
       }
