@@ -5,7 +5,8 @@ module.exports = {
   context: path.join(__dirname, 'src'), // Path of client-side code directory
   entry: ['./index.js'], // (Start file)
   output: {
-    path: path.join(__dirname, 'public', 'js'),
+    path: path.join(__dirname, 'public', 'assets'),
+    publicPath: '/assets/',
     filename: 'app.js'
   },
   module: {
@@ -26,7 +27,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('../css/style.css') // outputs css to public directory (relative to output path)
+    new ExtractTextPlugin('./style.css') // outputs css to public directory (relative to output path)
   ],
   resolve: {
     modules: [path.join(__dirname, 'node_modules')] // Where should webpack look for files referenced by import/require?

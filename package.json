@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
-    "live": "node server.js",
-    "test": "jest"
+    "live": "webpack-dev-server --content-base public/",
+    "test": "jest",
+    "test.watch": "jest --watch",
+    "test.update": "jest -u"
   },
   "author": "",
   "license": "ISC",
@@ -14,9 +16,13 @@
   "devDependencies": {
     "autoprefixer": "^7.1.4",
     "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.0",
     "babel-jest": "^21.0.2",
     "babel-loader": "^7.1.2",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
+    "babel-preset-es2017": "^6.24.1",
     "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "chess.js": "^0.10.2",
@@ -37,6 +43,7 @@
     "redux-thunk": "^2.2.0",
     "style-loader": "^0.18.2",
     "webpack": "^3.6.0",
-    "webpack-dev-middleware": "^1.12.0"
+    "webpack-dev-middleware": "^1.12.0",
+    "webpack-dev-server": "^2.8.2"
   }
 }
