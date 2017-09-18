@@ -14,7 +14,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(
   webpackDevMiddleware(compiler, {
     hot: true, // Reloading supported
-    filename: 'bundle.js',
+    filename: 'app.js',
     publicPath: '/js/',
     stats: {
       colors: true

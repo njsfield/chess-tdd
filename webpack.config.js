@@ -3,10 +3,10 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   context: path.join(__dirname, 'src'), // Path of client-side code directory
-  entry: ['./main.js'], // (Start file)
+  entry: ['./index.js'], // (Start file)
   output: {
     path: path.join(__dirname, 'public', 'js'),
-    filename: 'bundle.js'
+    filename: 'app.js'
   },
   module: {
     rules: [
