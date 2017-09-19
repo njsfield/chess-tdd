@@ -3,17 +3,16 @@ import Tile from "../components/Tile";
 import Position from "../components/Position";
 import Board from "../components/Board";
 import { connect } from "react-redux";
-// import { tileStyles } from "../css/mapstyles";
-// import { fen_map } from "../lib/fen_map.js";
 import { select } from "../actions";
-import fen_map, { pos_list } from "../lib/fen_map.js";
+import { map_state, pos_list } from "../lib/fen_tools";
 import {
   tile_background,
   piece_color,
+  piece_background,
   piece_code,
   top,
   left
-} from "../lib/styles.js";
+} from "../lib/style_tools";
 import R from "ramda";
 
 // @TODO, map state to props, dispatch to props
@@ -45,8 +44,8 @@ const App = ({ state, trigger_select }) => {
           <Position
             key={p.position}
             position={p}
-            color={piece_color}
-            background={state.selected == p.position ? "#19a974" : "tranparent"}
+            color={piece_color(p, state)}
+            background={piece_background(p, state)}
             top={top(p.position)}
             left={left(p.position)}
             onClick={() => trigger_select(p.position)}
@@ -54,7 +53,7 @@ const App = ({ state, trigger_select }) => {
             {piece_code(p.entity)}
           </Position>
         )
-      )(fen_map(state))}
+      )(map_state(state))}
     </Board>
   );
 };

@@ -10,6 +10,7 @@ export default styled.span`
   height: 12.5%;
   width: 12.5%;
   position: absolute;
+  transition: all .2s ease;
   ${({ color, background, top, left }) => css`
     background: ${background};
     color: ${color};

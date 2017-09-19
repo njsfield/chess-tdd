@@ -1,10 +1,14 @@
-import Chess from "./lib/chess.js";
-import is_valid_position from "./lib/is_valid_position";
+import {
+  get_options,
+  is_valid_position,
+  start_game_fen,
+  update_fen
+} from "./lib/fen_tools";
 import { SELECT } from "./constants";
 
 // Make available for testing
 export const default_state = {
-  fen: new Chess().fen(),
+  fen: start_game_fen,
   selected: null,
   selected_options: [],
   desired_move: null
@@ -14,19 +18,20 @@ export const default_state = {
 export default (state = default_state, { type, position }) => {
   // Do not allow invalid select spots
   if (!is_valid_position(position)) return state;
-  const current = new Chess(state.fen);
+  // Extract from state
+  const { fen, selected, selected_options, desired_move } = state;
+  // Main switch
   switch (type) {
     case SELECT:
       // 3. (When confirming move)
-      if (position === state.desired_move) {
+      if (position === desired_move) {
         // Make move
-        current.move(position);
         return {
           ...default_state,
-          fen: current.fen()
+          fen: update_fen(selected, desired_move, fen)
         };
         // 2. (When preparing desired move)
-      } else if (state.selected_options.indexOf(position) > -1) {
+      } else if (selected_options.includes(position)) {
         return {
           ...state,
           desired_move: position
@@ -34,11 +39,10 @@ export default (state = default_state, { type, position }) => {
         // 1. For selecting position (and preparing options)
       } else {
         return {
-          ...default_state,
+          ...state,
+          desired_move: null,
           selected: position,
-          selected_options: current.moves({
-            square: position
-          })
+          selected_options: get_options(position, fen)
         };
       }
     default:

@@ -1,4 +1,19 @@
 import R from "ramda";
+import Chess from "./chess";
+
+// "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+// ->
+//        +------------------------+
+//      8 | r  n  b  q  k  b  n  r |
+//      7 | p  p  p  p  p  p  p  p |
+//      6 | .  .  .  .  .  .  .  . |
+//      5 | .  .  .  .  .  .  .  . |
+//      4 | .  .  .  .  .  .  .  . |
+//      3 | .  .  .  .  .  .  .  . |
+//      2 | P  P  P  P  P  P  P  P |
+//      1 | R  N  B  Q  K  B  N  R |
+//        +------------------------+
+//          a  b  c  d  e  f  g  h'
 
 // 'abc def ghi' -> 'abc'
 export const first_word = R.replace(/\s.*$/, "");
@@ -29,8 +44,8 @@ export const fen_to_entities = R.compose(
   first_word
 );
 
-// "1234" -> ['1', '2', '3', '4']
-export const num_list = split_chars("12345678");
+// ['8','7','6','5','4','3','2','1']
+export const reverse_num_list = split_chars("87654321");
 
 // prep alpha list
 export const alpha_list = split_chars("abcdefgh");
@@ -38,7 +53,7 @@ export const alpha_list = split_chars("abcdefgh");
 // ['a1', 'a2', 'a3'...]
 export const pos_list = R.compose(
   R.map(R.compose(R.join(""), R.reverse)),
-  R.xprod(num_list)
+  R.xprod(reverse_num_list)
 )(alpha_list);
 
 // 'rnbqkbnr/pppppppp/8/8/8/8/PPP' -> {'a1': 'r' ...}
@@ -57,8 +72,13 @@ export const move_old_to_new = R.curry((o, n, obj) =>
   R.compose(set_empty_string(o), copy_old_to_new(o, n))(obj)
 );
 
-// Main export
-export default ({ fen, selected, selected_options, desired_move }) => {
+// state -> [{entity: 'r', position: 'a8'...}]
+export const map_state = ({
+  fen,
+  selected,
+  selected_options,
+  desired_move
+}) => {
   // Let
   let move = move_old_to_new(selected, desired_move),
     hasDesired = R.always(R.isNil(desired_move)),
@@ -76,3 +96,22 @@ export default ({ fen, selected, selected_options, desired_move }) => {
     }, R.ifElse(hasDesired, R.identity, move)(entities))
   );
 };
+
+// 'f4' -> true
+// 'k8' -> false
+export const is_valid_position = R.test(/^[a-h][1-8]$/i);
+
+// Start of game
+export const start_game_fen =
+  "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+// Perform move logic
+export const update_fen = (selected, desired_move, fen) => {
+  let c = new Chess(fen);
+  c.move({ from: selected, to: desired_move });
+  return c.fen();
+};
+
+// Get options
+export const get_options = (position, fen) =>
+  R.filter(p => new Chess(fen).move({ from: position, to: p }), pos_list);

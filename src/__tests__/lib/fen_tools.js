@@ -1,19 +1,23 @@
 import { default_state } from "../../reducer.js";
-import fen_map, {
+import {
   first_word,
   no_slashes,
   split_chars,
   snum_to_spaces,
   snum_to_spaces_all,
   fen_to_entities,
-  num_list,
+  reverse_num_list,
   alpha_list,
   pos_list,
   map_entities,
   copy_old_to_new,
   set_empty_string,
-  move_old_to_new
-} from "../../lib/fen_map.js";
+  move_old_to_new,
+  is_valid_position,
+  map_state,
+  update_fen,
+  get_options
+} from "../../lib/fen_tools";
 
 // first_word
 describe("first_word", () => {
@@ -88,11 +92,11 @@ describe("fen_to_entities", () => {
   });
 });
 
-// num_list
-describe("num_list", () => {
-  it("Produces num list", () => {
-    const expected = ["1", "2", "3", "4", "5", "6", "7", "8"];
-    expect(num_list).toEqual(expected);
+// reverse_num_list
+describe("reverse_num_list", () => {
+  it("Produces reversed num list", () => {
+    const expected = ["8", "7", "6", "5", "4", "3", "2", "1"];
+    expect(reverse_num_list).toEqual(expected);
   });
 });
 
@@ -107,8 +111,8 @@ describe("alpha_list", () => {
 // pos_list
 describe("pos_list", () => {
   it("Produces pos list", () => {
-    const some_expected = ["a1", "b1", "c1", "d1", "a2", "b2", "b3"];
-    expect(pos_list).toEqual(expect.arrayContaining(some_expected));
+    const some_expected = ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"];
+    expect(pos_list.slice(0, 8)).toEqual(some_expected);
     expect(pos_list.length).toEqual(64);
   });
 });
@@ -117,7 +121,7 @@ describe("pos_list", () => {
 describe("map_entities", () => {
   it("Produces zipped object with pos list and fen entities", () => {
     const test_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    const some_expected = { a1: "r", b1: "n", c1: "b", d1: "q" };
+    const some_expected = { a8: "r", b8: "n", c8: "b", d8: "q" };
     const result = map_entities(test_fen);
     expect(result).toEqual(expect.objectContaining(some_expected));
     expect(Object.keys(result).length).toEqual(64);
@@ -158,32 +162,32 @@ describe("move_old_to_new", () => {
   });
 });
 
-// fen_map
-describe("fen_map (main)", () => {
-  it("(default) maps state to fen_map", () => {
+// map_state
+describe("map_state (main)", () => {
+  it("(default) maps state to map_state", () => {
     const some_expected = [
       {
         entity: "r",
-        position: "a1",
+        position: "a8",
         selected: false,
         selected_option: false,
         desired_move: false
       },
       {
         entity: "n",
-        position: "b1",
+        position: "b8",
         selected: false,
         selected_option: false,
         desired_move: false
       }
     ];
-    const result = fen_map(default_state);
+    const result = map_state(default_state);
     expect(result).toEqual(expect.arrayContaining(some_expected));
     expect(result.length).toEqual(64);
   });
-  it("(selected) maps state to fen_map", () => {
-    const position = "a2";
-    const options = ["a3", "a4"];
+  it("(selected) maps state to map_state", () => {
+    const position = "a7";
+    const options = ["a6", "a5"];
     const selected_state = {
       ...default_state,
       selected: position,
@@ -192,33 +196,33 @@ describe("fen_map (main)", () => {
     const some_expected = [
       {
         entity: "p",
-        position: "a2",
+        position: "a7",
         selected: true,
         selected_option: false,
         desired_move: false
       },
       {
         entity: " ",
-        position: "a3",
+        position: "a6",
         selected: false,
         selected_option: true,
         desired_move: false
       },
       {
         entity: " ",
-        position: "a4",
+        position: "a5",
         selected: false,
         selected_option: true,
         desired_move: false
       }
     ];
-    const result = fen_map(selected_state);
+    const result = map_state(selected_state);
     expect(result).toEqual(expect.arrayContaining(some_expected));
     expect(result.length).toEqual(64);
   });
-  it("(selected) maps state to fen_map", () => {
-    const position = "a2";
-    const options = ["a3", "a4"];
+  it("(selected) maps state to map_state", () => {
+    const position = "a7";
+    const options = ["a6", "a5"];
     const desired_move = options[0];
     const selected_state = {
       ...default_state,
@@ -229,28 +233,63 @@ describe("fen_map (main)", () => {
     const some_expected = [
       {
         entity: " ",
-        position: "a2",
+        position: "a7",
         selected: true,
         selected_option: false,
         desired_move: false
       },
       {
         entity: "p",
-        position: "a3",
+        position: "a6",
         selected: false,
         selected_option: true,
         desired_move: true
       },
       {
         entity: " ",
-        position: "a4",
+        position: "a5",
         selected: false,
         selected_option: true,
         desired_move: false
       }
     ];
-    const result = fen_map(selected_state);
+    const result = map_state(selected_state);
     expect(result).toEqual(expect.arrayContaining(some_expected));
     expect(result.length).toEqual(64);
+  });
+});
+
+describe("is_valid_position", () => {
+  it("validates valid positions", () => {
+    const valid_positions = ["a1", "b4", "b6", "g4", "h2"];
+    valid_positions.forEach(p => {
+      expect(is_valid_position(p)).toBeTruthy();
+    });
+  });
+  it("invalidates invalid positions", () => {
+    const invalid_positions = ["k1", "v4", "gg", "14", " ", "", "3"];
+    invalid_positions.forEach(p => {
+      expect(is_valid_position(p)).toBeFalsy();
+    });
+  });
+});
+
+describe("update_fen", () => {
+  it("creates new fen", () => {
+    const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const selected = "a2";
+    const desired = "a3";
+    const expected =
+      "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1";
+    expect(update_fen(selected, desired, fen)).toBe(expected);
+  });
+});
+
+describe("get_options", () => {
+  it("creates new fen", () => {
+    const fen = "rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq f3 0 2";
+    const selected = "e5";
+    const expected = ["f4"];
+    expect(get_options(selected, fen)).toEqual(expected);
   });
 });
