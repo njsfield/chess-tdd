@@ -1,6 +1,6 @@
-import Chess from './lib/chess.js';
-import is_valid_position from './lib/is_valid_position';
-import { SELECT } from './constants';
+import Chess from "./lib/chess.js";
+import is_valid_position from "./lib/is_valid_position";
+import { SELECT } from "./constants";
 
 // Make available for testing
 export const default_state = {
@@ -21,7 +21,6 @@ export default (state = default_state, { type, position }) => {
       if (position === state.desired_move) {
         // Make move
         current.move(position);
-        console.log(state.fen);
         return {
           ...default_state,
           fen: current.fen()

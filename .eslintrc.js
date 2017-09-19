@@ -1,4 +1,4 @@
-{
+module.exports = {
     "plugins": [
         "react", "jest"
     ],
@@ -22,5 +22,8 @@
         "plugin:react/recommended"
     ],
     "rules": {
+      "no-unused-vars": [1, { "vars": "local", "args": "after-used" }],
+      "no-undef" : 2,
+      "no-unused-expressions": 2
     }
 }
