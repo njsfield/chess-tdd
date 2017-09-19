@@ -16,7 +16,8 @@ import {
   is_valid_position,
   map_state,
   update_fen,
-  get_options
+  get_options,
+  is_whites_turn
 } from "../../lib/fen_tools";
 
 // first_word
@@ -291,5 +292,16 @@ describe("get_options", () => {
     const selected = "e5";
     const expected = ["f4"];
     expect(get_options(selected, fen)).toEqual(expected);
+  });
+});
+
+describe("is_whites_turn", () => {
+  it("Returns true at start of game (white)", () => {
+    const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    expect(is_whites_turn(fen)).toBeTruthy();
+  });
+  it("Returns false after firs turn (black)", () => {
+    const fen = "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1";
+    expect(is_whites_turn(fen)).toBeFalsy();
   });
 });

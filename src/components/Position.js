@@ -10,7 +10,21 @@ export default styled.span`
   height: 12.5%;
   width: 12.5%;
   position: absolute;
+
+  /** Remove text highlighting **/
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  /** Transition **/
+
   transition: all .2s ease;
+
+  /** Custom **/
   ${({ color, background, top, left }) => css`
     background: ${background};
     color: ${color};

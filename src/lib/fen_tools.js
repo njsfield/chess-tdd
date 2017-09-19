@@ -115,3 +115,6 @@ export const update_fen = (selected, desired_move, fen) => {
 // Get options
 export const get_options = (position, fen) =>
   R.filter(p => new Chess(fen).move({ from: position, to: p }), pos_list);
+
+// Determine whos turn
+export const is_whites_turn = fen => R.equals(new Chess(fen).turn(), "w");

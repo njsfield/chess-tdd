@@ -1,6 +1,6 @@
 import R from "ramda";
 
-import { reverse_num_list, alpha_list } from "./fen_tools";
+import { reverse_num_list, alpha_list, is_whites_turn } from "./fen_tools";
 
 const brown = "#BCAAA4";
 const white = "#ffffff";
@@ -16,23 +16,19 @@ export const tile_background = p =>
     : white;
 
 /* Piece Helpers */
-export const piece_color = (p, state) =>
-  p.entity.toUpperCase() == p.entity && p.position == state.selected
-    ? white
-    : black;
+export const piece_color = (position, { selected }) =>
+  R.ifElse(R.equals(selected), R.always(white), R.always(black))(position);
 
 /* Piece Helpers */
-export const piece_background = (p, state) =>
-  state.selected_options.includes(p.position) || p.position == state.selected
-    ? p.identity && p.entity.toUpperCase() == p.entity ? red : green
+export const piece_background = (
+  position,
+  { fen, selected_options, selected }
+) =>
+  R.or(R.contains(position, selected_options), R.equals(position, selected))
+    ? is_whites_turn(fen) ? green : red
     : transparent;
 
-/* Piece background */
-
-// Get piece code
-export const piece_code = p => piece_codes[p];
-
-// Hold codes
+// Uni-code symbols
 export const piece_codes = {
   // White
   R: "\u2656",

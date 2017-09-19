@@ -10,5 +10,4 @@ export default styled.div`
   width: 100%;
   max-width: 32rem;
   max-height: 32rem;
-  border: 1px solid black;
 `;

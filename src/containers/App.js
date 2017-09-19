@@ -9,48 +9,42 @@ import {
   tile_background,
   piece_color,
   piece_background,
-  piece_code,
+  piece_codes,
   top,
   left
 } from "../lib/style_tools";
 import R from "ramda";
 
-// @TODO, map state to props, dispatch to props
-
-// 1) Import board (container)
-// 2) Map tiles
-// 3) Map positions
-
+// Main
 const App = ({ state, trigger_select }) => {
   return (
     <Board>
-      {/* Prepare Tiles */}
+      {/* Map Tiles */}
       {R.compose(
-        R.map(p =>
+        R.map(position =>
           <Tile
-            key={p}
-            position={p}
-            background={tile_background(p)}
-            top={top(p)}
-            left={left(p)}
+            key={position}
+            background={tile_background(position)}
+            top={top(position)}
+            left={left(position)}
           />
         ),
-        R.map(p => pos_list[p]),
+        R.map(n => pos_list[n]),
         R.range(0)
       )(64)}
-      {/* Prepare Positions */}
+      {/* Map Positions */}
       {R.compose(
-        R.map(p =>
+        R.map(({ position, entity }) =>
           <Position
-            key={p.position}
-            position={p}
-            color={piece_color(p, state)}
-            background={piece_background(p, state)}
-            top={top(p.position)}
-            left={left(p.position)}
-            onClick={() => trigger_select(p.position)}
+            key={position}
+            color={piece_color(position, state)}
+            background={piece_background(position, state)}
+            top={top(position)}
+            left={left(position)}
+            onTouchStart={() => trigger_select(position)}
+            onMouseDown={() => trigger_select(position)}
           >
-            {piece_code(p.entity)}
+            {piece_codes[entity]}
           </Position>
         )
       )(map_state(state))}
@@ -58,16 +52,11 @@ const App = ({ state, trigger_select }) => {
   );
 };
 
-const map_state_to_props = state => {
-  return {
-    state
-  };
-};
-
+// mdtp
 const map_dispatch_to_props = dispatch => {
   return {
     trigger_select: position => dispatch(select(position))
   };
 };
 
-export default connect(map_state_to_props, map_dispatch_to_props)(App);
+export default connect(R.objOf("state"), map_dispatch_to_props)(App);
