@@ -21,6 +21,7 @@ export default (state = default_state, { type, position }) => {
       if (position === state.desired_move) {
         // Make move
         current.move(position);
+        console.log(state.fen);
         return {
           ...default_state,
           fen: current.fen()
