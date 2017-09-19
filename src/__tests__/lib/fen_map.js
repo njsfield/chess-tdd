@@ -1,5 +1,5 @@
 import { default_state } from "../../reducer.js";
-import fenmap, {
+import fen_map, {
   first_word,
   no_slashes,
   split_chars,
@@ -13,7 +13,7 @@ import fenmap, {
   copy_old_to_new,
   set_empty_string,
   move_old_to_new
-} from "../../lib/fenmap.js";
+} from "../../lib/fen_map.js";
 
 // first_word
 describe("first_word", () => {
@@ -158,9 +158,9 @@ describe("move_old_to_new", () => {
   });
 });
 
-// fenmap
-describe("fenmap (main)", () => {
-  it("(default) maps state to fenmap", () => {
+// fen_map
+describe("fen_map (main)", () => {
+  it("(default) maps state to fen_map", () => {
     const some_expected = [
       {
         entity: "r",
@@ -177,11 +177,11 @@ describe("fenmap (main)", () => {
         desired_move: false
       }
     ];
-    const result = fenmap(default_state);
+    const result = fen_map(default_state);
     expect(result).toEqual(expect.arrayContaining(some_expected));
     expect(result.length).toEqual(64);
   });
-  it("(selected) maps state to fenmap", () => {
+  it("(selected) maps state to fen_map", () => {
     const position = "a2";
     const options = ["a3", "a4"];
     const selected_state = {
@@ -212,11 +212,11 @@ describe("fenmap (main)", () => {
         desired_move: false
       }
     ];
-    const result = fenmap(selected_state);
+    const result = fen_map(selected_state);
     expect(result).toEqual(expect.arrayContaining(some_expected));
     expect(result.length).toEqual(64);
   });
-  it("(selected) maps state to fenmap", () => {
+  it("(selected) maps state to fen_map", () => {
     const position = "a2";
     const options = ["a3", "a4"];
     const desired_move = options[0];
@@ -249,7 +249,7 @@ describe("fenmap (main)", () => {
         desired_move: false
       }
     ];
-    const result = fenmap(selected_state);
+    const result = fen_map(selected_state);
     expect(result).toEqual(expect.arrayContaining(some_expected));
     expect(result.length).toEqual(64);
   });
