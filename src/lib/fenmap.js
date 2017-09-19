@@ -59,12 +59,11 @@ export const move_old_to_new = R.curry((o, n, obj) =>
 
 // Main export
 export default ({ fen, selected, selected_options, desired_move }) => {
-  // 1) Prepare entity obj
-  const entities = (entities =>
-    desired_move
-      ? move_old_to_new(selected, desired_move, entities)
-      : entities)(map_entities(fen));
-  // 2) Return summary for each entity
+  // Let
+  let move = move_old_to_new(selected, desired_move),
+    hasDesired = R.always(R.isNil(desired_move)),
+    entities = map_entities(fen);
+  // In
   return R.values(
     R.mapObjIndexed((entity, position) => {
       return {
@@ -74,6 +73,6 @@ export default ({ fen, selected, selected_options, desired_move }) => {
         selected: R.equals(selected, position),
         desired_move: R.equals(desired_move, position)
       };
-    }, entities)
+    }, R.ifElse(hasDesired, R.identity, move)(entities))
   );
 };
