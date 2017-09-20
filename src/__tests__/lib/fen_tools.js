@@ -3,8 +3,8 @@ import {
   first_word,
   no_slashes,
   split_chars,
-  snum_to_spaces,
-  snum_to_spaces_all,
+  snum_to_empty,
+  snum_to_empty_all,
   fen_to_entities,
   reverse_num_list,
   alpha_list,
@@ -47,8 +47,8 @@ describe("split_chars", () => {
   });
 });
 
-// snum_to_spaces
-describe("snum_to_spaces", () => {
+// snum_to_empty
+describe("snum_to_empty", () => {
   it("Converts string int to spaces ", () => {
     const snumA = "2";
     const snumB = "4";
@@ -56,9 +56,9 @@ describe("snum_to_spaces", () => {
     const expectedA = "  ";
     const expectedB = "    ";
     const expectedC = "        ";
-    expect(snum_to_spaces(snumA)).toEqual(expectedA);
-    expect(snum_to_spaces(snumB)).toEqual(expectedB);
-    expect(snum_to_spaces(snumC)).toEqual(expectedC);
+    expect(snum_to_empty(snumA)).toEqual(expectedA);
+    expect(snum_to_empty(snumB)).toEqual(expectedB);
+    expect(snum_to_empty(snumC)).toEqual(expectedC);
   });
 });
 
@@ -67,7 +67,7 @@ describe("snup_to_spaces_all", () => {
   it("Converts string int to spaces ", () => {
     const snum_string = "rnbqkbnr/pppppppp/2/3/2/1/PPPPPPPP/RNBQKBNR";
     const expected = "rnbqkbnr/pppppppp/  /   /  / /PPPPPPPP/RNBQKBNR";
-    expect(snum_to_spaces_all(snum_string)).toEqual(expected);
+    expect(snum_to_empty_all(snum_string)).toEqual(expected);
   });
 });
 

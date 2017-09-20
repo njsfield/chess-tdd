@@ -1,19 +1,19 @@
 import React from "react";
+import R from "ramda";
 import Tile from "../components/Tile";
 import Position from "../components/Position";
 import Board from "../components/Board";
 import { connect } from "react-redux";
 import { select } from "../actions";
-import { map_state, pos_list } from "../lib/fen_tools";
+import { map_state, pos_list, is_targetted_piece } from "../lib/fen_tools";
 import {
   tile_background,
-  piece_color,
-  piece_background,
+  piece_colour,
+  position_background,
   piece_codes,
   top,
   left
 } from "../lib/style_tools";
-import R from "ramda";
 
 // Main
 const App = ({ state, trigger_select }) => {
@@ -37,8 +37,9 @@ const App = ({ state, trigger_select }) => {
         R.map(({ position, entity }) =>
           <Position
             key={position}
-            color={piece_color(position, state)}
-            background={piece_background(position, state)}
+            colour={piece_colour(position, state)}
+            background={position_background({ position, entity }, state)}
+            targetted={is_targetted_piece({ position, entity }, state)}
             top={top(position)}
             left={left(position)}
             onTouchStart={() => trigger_select(position)}

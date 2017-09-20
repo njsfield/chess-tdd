@@ -15,6 +15,8 @@ import Chess from "./chess";
 //        +------------------------+
 //          a  b  c  d  e  f  g  h'
 
+export const empty_entity = " ";
+
 // 'abc def ghi' -> 'abc'
 export const first_word = R.replace(/\s.*$/, "");
 
@@ -25,21 +27,21 @@ export const no_slashes = R.replace(/\//g, "");
 export const split_chars = R.split("");
 
 // 2 -> '  '
-export const snum_to_spaces = R.compose(
+export const snum_to_empty = R.compose(
   R.join(""),
-  R.times(R.always(" ")),
+  R.times(R.always(empty_entity)),
   R.curry(x => +x)
 );
 
 // '21as' -> '   as'
-export const snum_to_spaces_all = R.curry(s =>
-  s.replace(/[0-8]/g, snum_to_spaces)
+export const snum_to_empty_all = R.curry(s =>
+  s.replace(/[0-8]/g, snum_to_empty)
 );
 
 // 'rnbqk...' -> ['r', 'n', 'b', 'q', 'k' ....]
 export const fen_to_entities = R.compose(
   split_chars,
-  snum_to_spaces_all,
+  snum_to_empty_all,
   no_slashes,
   first_word
 );
@@ -101,7 +103,7 @@ export const map_state = ({
 // 'k8' -> false
 export const is_valid_position = R.test(/^[a-h][1-8]$/i);
 
-// Start of game
+// "rnbqkbnr/pppppppp/8..."
 export const start_game_fen =
   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -116,5 +118,26 @@ export const update_fen = (selected, desired_move, fen) => {
 export const get_options = (position, fen) =>
   R.filter(p => new Chess(fen).move({ from: position, to: p }), pos_list);
 
-// Determine whos turn
-export const is_whites_turn = fen => R.equals(new Chess(fen).turn(), "w");
+// '... RNBQKBNR w KQkq - 0 1' -> w
+export const get_turn = fen => new Chess(fen).turn();
+
+// '... RNBQKBNR w KQkq - 0 1' -> true
+export const is_whites_turn = fen => R.equals(get_turn(fen), "w");
+
+// {entity: 'r', position: 'a8'} -> {selected_options: ['a8']} -> true
+// {entity: ' ', position: 'a8'} -> {selected_options: ['a8']} -> false
+// {entity: 'r', position: 'a8'} -> {selected_options: ['a7']} -> false
+
+// 'a1' -> 'rnbqkbnr' -> 'b'
+export const get_player = (position, fen) =>
+  new Chess(fen).get(position) && new Chess(fen).get(position).color;
+
+// {entity: 'r', position: 'a8'} -> {selected_options: ['a8'], desired_move: null, 'rnbqkbnr' } -> true
+export const is_targetted_piece = (
+  { entity, position },
+  { selected_options, desired_move, fen }
+) =>
+  R.not(R.equals(entity, empty_entity)) &&
+  R.contains(position, selected_options) &&
+  R.isNil(desired_move) &&
+  R.not(R.equals(get_turn(fen), get_player(position, fen)));

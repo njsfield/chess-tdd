@@ -25,10 +25,22 @@ export default styled.span`
   transition: all .2s ease;
 
   /** Custom **/
-  ${({ color, background, top, left }) => css`
+  ${({ colour, background, top, left, targetted }) => css`
     background: ${background};
-    color: ${color};
+    animation: ${targetted
+      ? "flicker .1s linear 0s infinite alternate;"
+      : "none"};
+    color: ${colour};
     top: ${top};
     left: ${left};
   `};
+
+  @keyframes flicker {
+    from {
+      opacity: 0.5;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
