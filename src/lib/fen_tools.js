@@ -133,10 +133,11 @@ export const get_player = (position, fen) =>
   new Chess(fen).get(position) && new Chess(fen).get(position).color;
 
 // {entity: 'r', position: 'a8'} -> {selected_options: ['a8'], desired_move: null, 'rnbqkbnr' } -> true
-export const is_targetted_piece = (
-  { entity, position },
-  { selected_options, desired_move, fen }
-) =>
+export const is_targetted_piece = ({
+  entity,
+  position,
+  state: { selected_options, desired_move, fen }
+}) =>
   R.not(R.equals(entity, empty_entity)) &&
   R.contains(position, selected_options) &&
   R.isNil(desired_move) &&
